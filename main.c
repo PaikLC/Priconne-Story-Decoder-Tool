@@ -13,9 +13,20 @@ const char *help =
     "and should work to all the data servers?\n\n"
     "%s -p \"path/to/the/storydata.bytes\" [-o \"path/to/output/the/result\"] options\n\n" // %s is to the name of the program (argv[0])...
     "Arguments:\n"
-        "\t-p           The path to the file to deserialize\n"
-        "\t-o           The path to the directory to save de result\n\n"
-        "\t--all-text   Put in a txt file all the details of the file\n"
+        "\t-p                   The path to the file to deserialize\n"
+        "\t-o                   The path to the directory to save de result\n"
+        "\t\n" //More simple commands??
+    "Long arguments\n"
+        "\t--all-data           Put in a txt file all the details of the file\n"
+        "\t--only-category CAT  Just save the specifided category command\n"
+        "\t                     Posible str: NON, SYS, MOT, EFC\n"
+        "\t                     NON: for uncategorized category\n"
+        "\t                     SYS: for System category\n"
+        "\t                     MOT: for Motion category\n"
+        "\t                     EFC: for Effect category\n\n"
+        "\t--only-cat-number N  Just save the specified category number\n"
+        "\t                     They are 112 but the starts form -1 to 110\n"
+        "\t                     For more details see the source code or docs\n" // Docs if I have the time... and motivation
 ;
 
 const char *none = " "; 
@@ -99,7 +110,7 @@ int main(int argc, char *argv[])
 
         case '-':
             {
-                if (strcmp(argv[i], "--all-text") == 0)
+                if (strcmp(argv[i], "--all-data") == 0)
                 {
                     tmp = true;
                 }

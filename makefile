@@ -10,7 +10,7 @@ LIBRARY_PATH		= 	.\lib
 
 
 # descomentar para hacer una compilacion de depuracion.
-DEBUG = 1
+#DEBUG = 1
 
 # Comentar para hacer una compilacion el Windows.
 #LINUX_MODE = 1
@@ -23,7 +23,7 @@ export PATH := $(COMPILER_PATH):$(PATH)
 # Las cosas a compilara
 TARGET			= main
 OBJS			= $(TARGET).o $(LIBRARY_PATH)\base64\buffer.o $(LIBRARY_PATH)\base64\decode.o $(LIBRARY_PATH)\base64\encode.o
-OBJS			+= $(LIBRARY_PATH)\deserializer\deserializer.o
+OBJS			+= $(LIBRARY_PATH)\deserializer\deserializer.o $(LIBRARY_PATH)\deserializer\list.o
 
 ifdef DEBUG
 NAME			= main_dbg.exe

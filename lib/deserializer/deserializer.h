@@ -10,6 +10,16 @@
     as a base to do the whole library
 
     Also you will need to decode base64 text...
+
+    ------ DETAILS ------
+    Version: 0.9
+    The first version was a total mess using arrays and realloc...
+    So I decided to rewritte the whole thing again, but now using
+    a list.
+
+    But some problems have presented so...
+    Some things need to be changed thats why I add the list.c file
+    to manage al the related things about the list
     */
 
 #ifndef _REDIVE_DESER_H_
