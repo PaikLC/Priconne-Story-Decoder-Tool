@@ -295,7 +295,7 @@ unsigned int deserializeFile(const char *file, ARGS *text)
 {
     FILE *data = NULL;
     ARGS *pNext = text;
-    extraArgu *epNext = NULL;
+    extraArgu *epNext = (extraArgu *)malloc(sizeof(extraArgu) * 1), *epAux = NULL;
 
     unsigned int readed = 0;
     unsigned long length = 0;
@@ -305,7 +305,7 @@ unsigned int deserializeFile(const char *file, ARGS *text)
     {
         return readed;
     }
-    else if (text == NULL)
+    else if (text == NULL || epNext == NULL)
     {
         return readed;
     }
@@ -318,6 +318,8 @@ unsigned int deserializeFile(const char *file, ARGS *text)
         if (length != 0)
         {
             pNext->argument = readArgument(length, data);
+            pNext->extra = NULL;
+            getBase64(pNext->argument);
         }
         else
         {
@@ -328,13 +330,23 @@ unsigned int deserializeFile(const char *file, ARGS *text)
             pNext->extra = NULL;
             evalCommand(pNext);
 
-            pNext = pNext->nextArgument; // Some corroboration?
+            
+            if (feof(data) != 0)
+            {
+                free(pNext->nextArgument);
+                pNext->nextArgument = NULL;
+            }
+            else
+            {
+                pNext = pNext->nextArgument; // Some corroboration?
+            }
+            
             continue;
         }
         
         fread(&length, sizeof(unsigned long), 1, data);
         length = normalizeLength(length);
-
+        /*
         if ((length != 0) && (ferror(data) == 0) && (feof(data) == 0))
         {
             epNext = (extraArgu *)malloc(sizeof(extraArgu) * 1);
@@ -351,25 +363,31 @@ unsigned int deserializeFile(const char *file, ARGS *text)
         
         fread(&length, sizeof(unsigned long), 1, data);
         length = normalizeLength(length);
-
+        */
+        epAux = epNext;
         while ((length != 0) && (ferror(data) == 0) && (feof(data) == 0))
         {
-            epNext->nextArgument = (extraArgu *)malloc(sizeof(extraArgu) * 1);
-            epNext = epNext->nextArgument;
 
-            epNext->argument = (unsigned char *)malloc(sizeof(unsigned char) * (length + 1));
-            fread(epNext->argument, length, 1, data);
-            getBase64(epNext->argument);
+            epAux->argument = (unsigned char *)malloc(sizeof(unsigned char) * (length + 1));
+            fread(epAux->argument, length, 1, data);
+            getBase64(epAux->argument);
 
-            epNext->argument[length] = '\0';
+            epAux->argument[length] = '\0';
 
             fread(&length, sizeof(unsigned long), 1, data);
             length = normalizeLength(length);
 
             if (length == 0)
             {
-                epNext->nextArgument = NULL;
+                epAux->nextArgument = NULL;
+                pNext->extra = epNext;
                 continue;
+            }
+            else
+            {
+                epAux->nextArgument = (extraArgu *)malloc(sizeof(extraArgu) * 1);
+                epAux = epAux->nextArgument;
+                epAux->nextArgument = NULL;
             }
         }
         
@@ -378,11 +396,24 @@ unsigned int deserializeFile(const char *file, ARGS *text)
         pNext->nextArgument = (ARGS *)malloc(sizeof(ARGS) * 1);
         evalCommand(pNext);
 
+        if (pNext->extra != NULL)
+        {
+            epNext = (extraArgu *)malloc(sizeof(extraArgu) * 1);
+            epNext->nextArgument = NULL;
+            
+        }
+        
         pNext = pNext->nextArgument;
 
     } while ((feof(data) == 0) && (ferror(data) == 0));
     
     pNext->nextArgument = NULL;
+
+    if (pNext->extra == NULL)
+    {
+        free (epNext);
+    }
+    
 
     if (ferror(data) != 0)
     {

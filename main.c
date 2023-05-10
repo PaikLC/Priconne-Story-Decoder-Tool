@@ -18,6 +18,7 @@ const char *help =
         "\t--all-text   Put in a txt file all the details of the file\n"
 ;
 
+const char *none = " "; 
 
 void saveResult(char *path, ARGS *story)
 {
@@ -35,12 +36,19 @@ void saveResult(char *path, ARGS *story)
 
     while (aux != NULL)
     {
-        readable = b64_decode(aux->argument, strlen(aux->argument));
-        fprintf(save, "[%s][%s] %s\n", catCommand[aux->command.Bytes.category], catNumber[aux->command.Bytes.number + 1], readable);
+        if (aux->argument != NULL && aux->nextArgument != NULL)
+        {
+            readable = b64_decode(aux->argument, strlen(aux->argument));
+            fprintf(save, "[%s][%s] %s\n", catCommand[aux->command.Bytes.category], catNumber[aux->command.Bytes.number + 1], readable);
+            free(readable);
+        }
+        else
+        {
+            fprintf(save, "[%s][%s] %s\n", catCommand[aux->command.Bytes.category], catNumber[aux->command.Bytes.number + 1], none);
+        }
         fflush(save);
-        
-        free(readable);
-        while (extra != NULL)
+
+        while (extra != NULL && aux->nextArgument != NULL)
         {
             readable = b64_decode(extra->argument, strlen(extra->argument));
             fprintf(save, "\t%s\n", readable);
@@ -52,8 +60,16 @@ void saveResult(char *path, ARGS *story)
         }
         
         aux = aux->nextArgument;
+        if (aux != NULL)
+        {
+            extra = aux->extra;
+        }
+        else
+        {
+            extra = NULL;
+        }
     }
-    
+    fclose(save);
 }
 
 int main(int argc, char *argv[])
