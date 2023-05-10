@@ -10,7 +10,7 @@ LIBRARY_PATH		= 	.\lib
 
 
 # descomentar para hacer una compilacion de depuracion.
-#DEBUG = 1
+DEBUG = 1
 
 # Comentar para hacer una compilacion el Windows.
 #LINUX_MODE = 1
